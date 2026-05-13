@@ -414,13 +414,20 @@ function renderBrand(brandKey) {
       if (a.items.length !== b.items.length) return b.items.length - a.items.length;
       return a.sub_line.localeCompare(b.sub_line, 'ko');
     });
+    // 패키지 정렬: 중량/용량 오름차순 → 수량 오름차순 → 이름
+    const num = (v) => {
+      if (v == null || v === '') return Number.POSITIVE_INFINITY;
+      if (typeof v === 'number') return v;
+      const m = String(v).match(/-?\d+(\.\d+)?/);
+      return m ? parseFloat(m[0]) : Number.POSITIVE_INFINITY;
+    };
     for (const b of buckets) {
       b.items.sort((x, y) => {
-        const wx = (x.attribute && x.attribute.net_weight_kg) ?? 9e9;
-        const wy = (y.attribute && y.attribute.net_weight_kg) ?? 9e9;
+        const wx = num(x.attribute?.net_weight_kg);
+        const wy = num(y.attribute?.net_weight_kg);
         if (wx !== wy) return wx - wy;
-        const cx = (x.attribute && x.attribute.count_pcs) ?? 0;
-        const cy = (y.attribute && y.attribute.count_pcs) ?? 0;
+        const cx = num(x.attribute?.count_pcs);
+        const cy = num(y.attribute?.count_pcs);
         if (cx !== cy) return cx - cy;
         return x.name.localeCompare(y.name, 'ko');
       });
