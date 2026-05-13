@@ -79,6 +79,10 @@ main { padding: 28px 36px 60px; max-width: 1600px; margin: 0 auto; }
               display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
               overflow: hidden; line-height: 1.4; }
 .card .meta { font-size: 12px; color: #6e6e73; display: flex; gap: 8px; align-items: center; }
+.opt-row { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 8px; }
+.opt-badge { display: inline-block; padding: 2px 8px; border-radius: 6px;
+             background: #f5f5f7; color: #1d1d1f; font-size: 11.5px;
+             font-weight: 600; letter-spacing: -.1px; border: 1px solid #ebebed; }
 .fill-bar { height: 5px; background: #f0f0f3; border-radius: 3px; overflow: hidden; margin-top: 10px; }
 .fill-bar > div { height: 100%; transition: width .3s; }
 .fill-bar.high > div { background: #34c759; }
@@ -315,10 +319,21 @@ function escapeHtml(s) {
 }
 
 function buildCard(item) {
+  const attr = item.attribute || {};
+  // 구매 옵션 배지: 중량/용량 + 수량
+  const opts = [];
+  const w = attr.net_weight_kg;
+  const c = attr.count_pcs;
+  if (w) opts.push(typeof w === 'string' ? w : `${w}`);
+  if (c) opts.push(typeof c === 'string' ? c : `${c}`);
+  const optBadges = opts.length
+    ? `<div class="opt-row">${opts.map(o => `<span class="opt-badge">${escapeHtml(String(o))}</span>`).join('')}</div>`
+    : '';
   return `
     <div class="card ${item.fill_class}" onclick="openDetail('${item.id}')">
       <div class="brand-chip" style="background:${item.brand_color}">${item.brand} · ${item.category === 'ramen' ? '라면' : '생수'}</div>
       <div class="name">${escapeHtml(item.name)}</div>
+      ${optBadges}
       <div class="meta">
         <span class="pct">${item.filled}/${item.total} (${item.pct.toFixed(0)}%)</span>
         <span>· 이미지 ${item.images_used.length}장</span>
@@ -367,7 +382,7 @@ function renderBrand(brandKey) {
   const seriesCount = new Set(items.map(x => x.line + '||' + x.sub_line)).size;
   $kpi.innerHTML = `
     <div class="kpi"><div class="num">${lineCount}</div><div class="lbl">브랜드 라인</div></div>
-    <div class="kpi"><div class="num">${seriesCount}</div><div class="lbl">시리즈</div></div>
+    <div class="kpi"><div class="num">${seriesCount}</div><div class="lbl">패키지</div></div>
     <div class="kpi"><div class="num">${items.length}</div><div class="lbl">카탈로그</div></div>
     <div class="kpi"><div class="num">${avgPct.toFixed(1)}%</div><div class="lbl">평균 채움률</div></div>
   `;
