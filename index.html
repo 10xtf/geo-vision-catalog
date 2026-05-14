@@ -99,7 +99,21 @@ main { padding: 28px 36px 60px; max-width: 1600px; margin: 0 auto; }
 .overlay.show { display: flex; }
 .modal { background: #fff; max-width: 1000px; width: 100%; border-radius: 16px; padding: 28px 32px;
          box-shadow: 0 24px 60px rgba(0,0,0,.22); }
-.modal h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+.modal h2 { margin: 0 0 10px; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+.modal .info-grid { display: grid; grid-template-columns: 88px 1fr; row-gap: 6px; column-gap: 12px;
+                    font-size: 13.5px; color: #1d1d1f; margin-bottom: 14px; }
+.modal .info-grid .sep { grid-column: 1 / -1; height: 1px; background: #ebebed;
+                         margin: 6px 0 4px; }
+.modal .info-grid dt { color: #8e8e93; font-weight: 500; font-size: 12.5px; align-self: center; }
+.modal .info-grid dd { margin: 0; font-weight: 500; display: flex; align-items: center; gap: 6px;
+                       flex-wrap: wrap; }
+.modal .info-grid .opt-pill { display:inline-block; padding:1px 8px; border-radius:6px;
+                              background:#f5f5f7; border:1px solid #ebebed; font-size:12.5px;
+                              color:#1d1d1f; font-weight:600; }
+.modal .sub-meta { font-size: 11.5px; color: #8e8e93; margin: 0 0 4px; display: flex;
+                   gap: 8px; flex-wrap: wrap; align-items: center; }
+.modal .sub-meta code { background: #f5f5f7; padding: 1px 6px; border-radius: 4px; font-size: 11px;
+                        color: #6e6e73; }
 .modal .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
                border-bottom: 1px solid #ebebed; padding-bottom: 16px; margin-bottom: 20px; }
 .modal .meta-line { font-size: 12.5px; color: #6e6e73; margin-top: 6px; display: flex;
@@ -515,13 +529,19 @@ function openDetail(id) {
     <div class="head">
       <div>
         <h2>${escapeHtml(item.name)}</h2>
-        <div class="meta-line">
-          <span class="brand-chip" style="background:${item.brand_color}">${item.brand}</span>
-          <code>${item.id}</code>
-          <span>· 채움률 <strong>${item.filled}/${item.total} (${item.pct.toFixed(0)}%)</strong></span>
-          <span>· ${item.model || ''}</span>
-          <span>· ${item.extracted_at || ''}</span>
-        </div>
+        <dl class="info-grid">
+          <dt>카테고리</dt>
+          <dd>${item.category_path ? escapeHtml(item.category_path) + (item.ctlg_no_11st ? ` <span style="color:#8e8e93;font-size:12px">· 11번가 CTLG ${item.ctlg_no_11st}</span>` : '') : '<span style="color:#c7c7cc">—</span>'}</dd>
+          <dt>브랜드</dt>
+          <dd><span class="brand-chip" style="background:${item.brand_color}">${item.brand}</span></dd>
+          <dt>구매옵션</dt>
+          <dd>${[item.attribute?.net_weight_kg, item.attribute?.count_pcs].filter(x => x !== null && x !== undefined && x !== '').map(v => `<span class="opt-pill">${escapeHtml(String(v))}</span>`).join('') || '<span style="color:#c7c7cc">—</span>'}</dd>
+          <div class="sep"></div>
+          <dt>채움률</dt>
+          <dd><strong>${item.filled}/${item.total}</strong> <span style="color:#8e8e93">(${item.pct.toFixed(0)}%)</span></dd>
+          <dt>적용 모델</dt>
+          <dd>${item.model || '—'}${item.extracted_at ? ` <span style="color:#8e8e93;font-size:12px">(${item.extracted_at})</span>` : ''}</dd>
+        </dl>
       </div>
       <button class="close" onclick="closeDetail()" aria-label="닫기">✕</button>
     </div>
@@ -529,14 +549,6 @@ function openDetail(id) {
       <span style="font-weight:700">출처 PDP</span>
       <a href="${item.pdp_url}" target="_blank">${item.pdp_url}</a>
     </div>
-    ${item.ctlg_no_11st ? `
-    <div class="src-row" style="background:#f0f9ff;border-color:#bae6fd">
-      <span style="font-weight:700;color:#0369a1">11번가 카탈로그</span>
-      <span><code>${item.ctlg_no_11st}</code></span>
-      <span>·</span>
-      <span><code>${item.disp_ctgr_no}</code></span>
-      <span style="color:#0c4a6e">${escapeHtml(item.category_path)}</span>
-    </div>` : ''}
     ${imgs ? `<div class="img-strip">${imgs}</div>` : ''}
     <div class="section-divider">정형 GEO 속성</div>
     <table class="attr-table">
