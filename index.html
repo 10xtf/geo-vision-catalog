@@ -353,7 +353,6 @@ function buildCard(item) {
       <div class="meta">
         <span class="pct">${item.filled}/${item.total} (${item.pct.toFixed(0)}%)</span>
         <span>· 이미지 ${item.images_used.length}장</span>
-        ${item.ctlg_no_11st ? `<span style="color:#0369a1">· 11번가 ${item.ctlg_no_11st}</span>` : ''}
       </div>
       <div class="fill-bar ${item.fill_class}"><div style="width:${item.pct}%"></div></div>
     </div>
