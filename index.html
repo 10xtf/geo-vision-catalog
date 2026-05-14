@@ -438,11 +438,15 @@ function renderBrand(brandKey) {
       const m = String(v).match(/-?\d+(\.\d+)?/);
       return m ? parseFloat(m[0]) : Number.POSITIVE_INFINITY;
     };
-    // 카탈로그명에서 마지막 (또는 유일한) 중량/수량 추출
+    // 카탈로그명에서 마지막 (또는 유일한) 중량/수량 추출 — 단위 정규화 (kg→g, L→ml)
     const weightFromName = (s) => {
-      const all = [...String(s || '').matchAll(/(\d+(?:\.\d+)?)\s*(g|ml|l)\b/gi)];
+      const all = [...String(s || '').matchAll(/(\d+(?:\.\d+)?)\s*(kg|g|ml|l)\b/gi)];
       if (!all.length) return Number.POSITIVE_INFINITY;
-      return parseFloat(all[all.length - 1][1]);
+      const last = all[all.length - 1];
+      const num = parseFloat(last[1]);
+      const unit = last[2].toLowerCase();
+      if (unit === 'kg' || unit === 'l') return num * 1000;  // L → ml, kg → g
+      return num;
     };
     const countFromName = (s) => {
       const all = [...String(s || '').matchAll(/(\d+)\s*개/g)];
