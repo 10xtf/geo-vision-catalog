@@ -331,7 +331,7 @@ function buildCard(item) {
     : '';
   return `
     <div class="card ${item.fill_class}" onclick="openDetail('${item.id}')">
-      <div class="brand-chip" style="background:${item.brand_color}">${item.brand} · ${item.category === 'ramen' ? '라면' : '생수'}</div>
+      <div class="brand-chip" style="background:${item.brand_color}">${item.brand}</div>
       <div class="name">${escapeHtml(item.name)}</div>
       ${optBadges}
       <div class="meta">
