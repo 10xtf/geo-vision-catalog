@@ -8,7 +8,7 @@ deploy:
 	touch "$$tmp/.nojekyll" && \
 	mkdir -p "$$tmp/$(SLUG)" && \
 	cp $(SLUG)/index.html "$$tmp/$(SLUG)/index.html" && \
-	ghp-import -n -p -f -o "$$tmp" && \
+	uvx ghp-import -n -p -f -o "$$tmp" && \
 	rm -rf "$$tmp"
 	@echo "✓ deployed → $(URL)"
 
